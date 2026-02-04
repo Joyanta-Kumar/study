@@ -214,4 +214,122 @@ It has two main elements:
 
  ---
 
- 
+ # Instruction Cycle (Fetch-Decode-Execution-Write Back)
+
+ ## Definition
+ The instruction cycle is the repeating sequence of steps of the CPU follows to executed a program, instruction by instruction.  
+
+ ### Steps of the cycle
+ #### Fetch
+ - Get the instruction from memory
+ - Steps:
+  - PC -> MAR
+  - Control bus: Memory READ
+  - Memory -> MDR -> IR
+  - PC <- PC + 1
+
+#### Decode
+- Control unit decodes opcode in IR
+- Determines:
+  - Instruction type (ALU, Memory, Branch)
+  - Operand location
+  - Addressing mode
+- Generates control signals
+
+#### Execute
+- Perform the operation
+  - ALU instructions: Read registers -> ALU -> WRITE result to register.  
+  - LOAD / STORE: Compute address -> memory transfer
+  - BRANCH / JUMP: Evaluate condition -> update PC if needed.
+
+#### Write Back
+- Results of execution written to registers or memory.  
+- Flags updated.  
+
+## Diagram
+
+```graphql
+        ┌─────────┐
+        │  Fetch  │
+        └─────┬───┘
+              │
+        ┌─────▼───┐
+        │ Decode  │
+        └─────┬───┘
+              │
+        ┌─────▼────┐
+        │ Execute  │
+        └─────┬────┘
+              │
+        ┌─────▼──────┐
+        │ Write-Back │
+        └────────────┘
+```
+
+## Key notes  
+- PC is incremented during fetch, not after execution.  
+- Every instruction passes through fetch and decode.
+- Execution depends on instruction type: write-back may be optional.
+
+## Summary
+The instruction cycle fetches the instruction from memory, decodes it to generate control signals, executes it using the ALU or memory, and writes the result back to registers or memory, repeating for all instructions.  
+
+---
+
+# Expanded Instruction Cycle (IF, IOD, OAC, IAC)  
+
+## Definition
+The expanded instruction cycle breaks the basic fetch–decode–execute cycle into finer states to handle different instruction types and addressing modes.  
+
+## States
+### IF — Instruction Fetch
+- Fetch the next instruction from memory
+- Steps:
+  - PC → MAR
+  - Memory Read → MDR → IR
+  - PC ← PC + 1
+- Mandatory for all instructions
+
+### IOD — Instruction Opcode Decode
+- Decode the instruction in IR
+- Determine:
+  - Operation type
+  - Number of operands
+  - Addressing mode
+- Control signals are generated
+- Mandatory for all instructions
+
+### OAC — Operand Address Calculation
+- Compute the effective address if the instruction accesses memory.
+- Steps:
+  - Base register + offset or index
+  - Result → MAR
+- Conditional: Only for memory-access instructions (LOAD, STORE)
+
+### IAC — Instruction Address Calculation
+- Compute target address for branch, jump, or call instructions
+- Evaluate condition if necessary
+- Update PC if branch taken
+- Conditional: Only for control transfer instructions
+
+## Diagram
+```graphql
+          ┌─────────┐
+          │    IF   │
+          └─────┬───┘
+                │
+          ┌─────▼───┐
+          │   IOD   │
+          └─────┬───┘
+   ┌────────────┼────────────┐
+   ▼            ▼            ▼
+  OAC           IAC         Execute
+(memory)   (branch/jump)      │
+                └─────────────┘
+```
+
+## Summary
+In the expanded instruction cycle, the CPU moves through Instruction Fetch (IF), Instruction Opcode Decode (IOD), Operand Address Calculation (OAC), for memory instructions, and instruction Address Calculation (IAC) for branch instructions, with conditional transitions based on instruction type.  
+
+---
+
