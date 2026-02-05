@@ -521,7 +521,7 @@ CPU Time = Instruction Count * CPI * Clock Cycle Time
 
 ## ADDER
 
-```
+```graphql
         ⌜------------⌝  
   ⌜-----| B REGISTER | 
   |     ⌞------------⌟ 
